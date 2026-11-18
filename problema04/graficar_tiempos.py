@@ -1,35 +1,44 @@
-import math
+import os
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.optimize import curve_fit
 
-from generar_datos import TAMANIOS
 from problema04 import leer_mochila, resolver_mochila
 
+TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 1000]
 REPETICIONES = 3
 ARCHIVO_TXT = "resultados_PL.txt"
 ARCHIVO_PNG = "tiempos_PL.png"
 
-
-def medir_tiempos(tamanios=TAMANIOS, repeticiones=REPETICIONES):
-    """Resuelve cada instancia varias veces y devuelve capacidades y tiempos promedio."""
+def medir_tiempos():
     capacidades = []
     tiempos_promedio = []
+    tamanios_reales = []
 
-    print("Midiendo tiempos del solver...\n")
-    for n in tamanios:
-        capacidad, pesos, valores = leer_mochila("mochila" + str(n) + ".txt")
+    print("Midiendo tiempos del solver PuLP...\n")
+    resolver_mochila([1], [1], 1) 
+
+    dir_mochilas = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Mochilas")
+
+    for n in TAMANIOS:
+        ruta = os.path.join(dir_mochilas, f"mochila{n}.txt")
+        if not os.path.exists(ruta):
+            continue
+            
+        capacidad, pesos, valores = leer_mochila(ruta)
 
         tiempos = []
-        for _ in range(repeticiones):
+        for _ in range(REPETICIONES):
             _, _, _, t = resolver_mochila(valores, pesos, capacidad)
             tiempos.append(t)
 
-        promedio = sum(tiempos) / repeticiones
+        promedio = sum(tiempos) / REPETICIONES
         capacidades.append(capacidad)
         tiempos_promedio.append(promedio)
-        print("n=" + str(n) + " | tiempo promedio solver: " + str(round(promedio, 6)) + "s")
+        tamanios_reales.append(n)
+        print(f"n={n:4d} | tiempo promedio solver: {promedio:.6f}s")
 
-    return capacidades, tiempos_promedio
-
+    return tamanios_reales, capacidades, tiempos_promedio
 
 def guardar_resultados(tamanios, capacidades, tiempos_promedio, repeticiones=REPETICIONES):
     with open(ARCHIVO_TXT, "w") as f:
@@ -43,33 +52,57 @@ def guardar_resultados(tamanios, capacidades, tiempos_promedio, repeticiones=REP
             f.write("{:<10} {:<15} {:<15}\n".format(
                 tamanios[i], capacidades[i], round(tiempos_promedio[i], 6)
             ))
-    print("\nResultados guardados en " + ARCHIVO_TXT)
+    print(f"\nResultados guardados en {ARCHIVO_TXT}")
 
+def modelo_exponencial(n, c):
+    return c * np.exp(n * np.log(2))
 
 def graficar(tamanios, tiempos_promedio):
-    n0 = tamanios[0]
-    log_t0 = math.log10(tiempos_promedio[0])
-    log_teorica = [log_t0 + (n - n0) * math.log10(2) for n in tamanios]
-    log_real = [math.log10(t) for t in tiempos_promedio]
+    if not tamanios:
+        return
+        
+    figura, (eje_izq, eje_der) = plt.subplots(1, 2, figsize=(14, 6))
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(tamanios, log_real, marker="o", label="Tiempo real (solver)",
-             color="steelblue", linewidth=2)
-    plt.plot(tamanios, log_teorica, marker="s", label="Curva teórica O(2^n)",
-             color="orange", linewidth=2, linestyle="--")
-    plt.xlabel("n (cantidad de elementos)")
-    plt.ylabel("log10( tiempo en segundos )")
-    plt.title("Problema 4 - Programación Lineal: Tiempo del solver vs n")
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
+    n_limite_izq = 40
+    tamanios_izq = [n for n in tamanios if n <= n_limite_izq]
+    tiempos_izq = [tiempos_promedio[i] for i, n in enumerate(tamanios) if n <= n_limite_izq]
+    
+    if tamanios_izq:
+        n_exp_max = 30
+        tamanios_ajuste = [n for n in tamanios if n <= n_exp_max]
+        tiempos_ajuste = [tiempos_promedio[i] for i, n in enumerate(tamanios) if n <= n_exp_max]
+        
+        popt, _ = curve_fit(modelo_exponencial, np.array(tamanios_ajuste, dtype=float), np.array(tiempos_ajuste, dtype=float))
+        c_opt = popt[0]
+        
+        n_teorico = np.linspace(min(tamanios), n_exp_max, 100)
+        t_teorico = modelo_exponencial(n_teorico, c_opt)
+        
+        eje_izq.plot(n_teorico, t_teorico, color="orange", linewidth=2, linestyle="--", label="Curva teórica $O(2^n)$")
+        eje_izq.plot(tamanios_izq, tiempos_izq, marker="o", color="steelblue", linewidth=2, label="Tiempo real")
+        
+        eje_izq.set_ylim(-0.005, max(tiempos_izq) * 1.5)
+        eje_izq.set_title(f"Ajuste Teórico (n <= {n_limite_izq})")
+        eje_izq.set_xlabel("n (cantidad de elementos)")
+        eje_izq.set_ylabel("Tiempo (s)")
+        eje_izq.grid(True, linestyle=":", alpha=0.7)
+        eje_izq.legend()
+
+    # Panel Derecho: Escalabilidad completa
+    eje_der.plot(tamanios, tiempos_promedio, marker="o", color="steelblue", linewidth=2, label="Tiempo real (solver)")
+    eje_der.set_title("Escalabilidad del Solver (todos los tamaños)")
+    eje_der.set_xlabel("n (cantidad de elementos)")
+    eje_der.set_ylabel("Tiempo (s)")
+    eje_der.grid(True, linestyle=":", alpha=0.7)
+    eje_der.legend()
+
+    figura.suptitle("Problema 4 - Programación Lineal: Tiempo del solver vs n")
+    figura.tight_layout()
     plt.savefig(ARCHIVO_PNG, dpi=150)
     plt.show()
-
-    print("Gráfico guardado en " + ARCHIVO_PNG)
-
+    print(f"Gráfico guardado en {ARCHIVO_PNG}")
 
 if __name__ == "__main__":
-    capacidades, tiempos_promedio = medir_tiempos()
-    guardar_resultados(TAMANIOS, capacidades, tiempos_promedio)
-    graficar(TAMANIOS, tiempos_promedio)
+    tamanios, capacidades, tiempos_promedio = medir_tiempos()
+    guardar_resultados(tamanios, capacidades, tiempos_promedio)
+    graficar(tamanios, tiempos_promedio)
