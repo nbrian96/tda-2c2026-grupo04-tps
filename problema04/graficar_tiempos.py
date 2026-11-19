@@ -5,14 +5,10 @@ from scipy.optimize import curve_fit
 
 from problema04 import leer_mochila, resolver_mochila
 
-# Usamos los tamaños unificados que se generaron en la raíz
-TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 1000]
-REPETICIONES = 3
+TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+REPETICIONES = 10
 ARCHIVO_TXT = "resultados_PL.txt"
 ARCHIVO_PNG = "tiempos_PL.png"
-
-N_EXP_MAX = 30
-N_COTA_MAX = 60
 
 def medir_tiempos():
     capacidades = []
@@ -20,9 +16,7 @@ def medir_tiempos():
     tamanios_reales = []
 
     print("Midiendo tiempos del solver PuLP...\n")
-
-    # Corrida de calentamiento
-    resolver_mochila([1], [1], 1)
+    resolver_mochila([1], [1], 1) # Calentamiento
 
     dir_mochilas = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Mochilas")
 
@@ -35,22 +29,14 @@ def medir_tiempos():
 
         tiempos = []
         for _ in range(REPETICIONES):
-            # Guardamos la solución de la última iteración
-            seleccionados, valor_total, peso_total, t = resolver_mochila(valores, pesos, capacidad)
+            _, _, _, t = resolver_mochila(valores, pesos, capacidad)
             tiempos.append(t)
 
-        promedio = sum(tiempos) / repeticiones
+        promedio = sum(tiempos) / REPETICIONES
         capacidades.append(capacidad)
         tiempos_promedio.append(promedio)
         tamanios_reales.append(n)
         print(f"n={n:4d} | tiempo promedio solver: {promedio:.6f}s")
-
-        # Guardar la solución obtenida (requerimiento de la cátedra)
-        ruta_solucion = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"solucion_PL_n{n}.txt")
-        with open(ruta_solucion, "w") as f_sol:
-            f_sol.write(f"Valor total: {valor_total}\n")
-            f_sol.write(f"Peso utilizado: {peso_total}\n")
-            f_sol.write(f"IDs seleccionados: {seleccionados}\n")
 
     return tamanios_reales, capacidades, tiempos_promedio
 
@@ -66,73 +52,56 @@ def guardar_resultados(tamanios, capacidades, tiempos_promedio, repeticiones=REP
             f.write("{:<10} {:<15} {:<15}\n".format(
                 tamanios[i], capacidades[i], round(tiempos_promedio[i], 6)
             ))
-    print("\nResultados guardados en " + ARCHIVO_TXT)
+    print(f"\nResultados guardados en {ARCHIVO_TXT}")
 
-# Función para el ajuste exponencial puro (O(2^n))
 def modelo_exponencial(n, c):
-    # n * log(2) para evitar overflow antes del exp
     return c * np.exp(n * np.log(2))
 
 def graficar(tamanios, tiempos_promedio):
     if not tamanios:
         return
         
-    figura, (ejeLineal, ejeLog) = plt.subplots(1, 2, figsize=(15, 6))
+    figura, (eje_izq, eje_der) = plt.subplots(1, 2, figsize=(14, 6))
 
-    # Filtramos para el ajuste teórico solo los n <= N_EXP_MAX
-    tamanios_ajuste = [n for n in tamanios if n <= N_EXP_MAX]
-    tiempos_ajuste = [tiempos_promedio[i] for i, n in enumerate(tamanios) if n <= N_EXP_MAX]
+    # Panel Izquierdo: Zoom para la curva exponencial
+    n_limite_izq = 40
+    tamanios_izq = [n for n in tamanios if n <= n_limite_izq]
+    tiempos_izq = [tiempos_promedio[i] for i, n in enumerate(tamanios) if n <= n_limite_izq]
     
-    if tamanios_ajuste:
-        # Ajuste por mínimos cuadrados de la curva teórica exponencial
+    if tamanios_izq:
+        n_exp_max = 30
+        tamanios_ajuste = [n for n in tamanios if n <= n_exp_max]
+        tiempos_ajuste = [tiempos_promedio[i] for i, n in enumerate(tamanios) if n <= n_exp_max]
+        
         popt, _ = curve_fit(modelo_exponencial, np.array(tamanios_ajuste, dtype=float), np.array(tiempos_ajuste, dtype=float))
         c_opt = popt[0]
         
-        n_exp = list(range(tamanios[0], N_EXP_MAX + 1))
-        t_exp = modelo_exponencial(np.array(n_exp, dtype=float), c_opt)
+        n_teorico = np.linspace(min(tamanios), n_exp_max, 100)
+        t_teorico = modelo_exponencial(n_teorico, c_opt)
         
-        ejeLineal.plot(n_exp, t_exp, color="orange", linewidth=2, linestyle="--",
-                       label="Curva teórica $O(2^n)$ (ajustada)")
-        ejeLineal.plot(tamanios_ajuste, tiempos_ajuste, marker="o",
-                       color="steelblue", linewidth=2, label="Tiempo real (solver)")
-        ejeLineal.set_ylim(-0.03 * t_exp[-1], t_exp[-1])
+        eje_izq.plot(n_teorico, t_teorico, color="orange", linewidth=2, linestyle="--", label="Curva teórica $O(2^n)$")
+        eje_izq.plot(tamanios_izq, tiempos_izq, marker="o", color="steelblue", linewidth=2, label="Tiempo real")
         
-        n_cota = list(range(tamanios[0], N_COTA_MAX + 1))
-        t_cota = modelo_exponencial(np.array(n_cota, dtype=float), c_opt)
-        ejeLog.plot(n_cota, t_cota, color="orange", linewidth=2, linestyle="--",
-                    label="Cota teórica $O(2^n)$ (ajustada)")
-    
-    ejeLineal.set_title(f"Escala lineal, n <= {N_EXP_MAX}")
-    ejeLineal.set_xlabel("n (cantidad de elementos)")
-    ejeLineal.set_ylabel("Tiempo (s)")
+        eje_izq.set_ylim(-0.005, max(tiempos_izq) * 1.5)
+        eje_izq.set_title(f"Ajuste Teórico (n <= {n_limite_izq})")
+        eje_izq.set_xlabel("n (cantidad de elementos)")
+        eje_izq.set_ylabel("Tiempo (s)")
+        eje_izq.grid(True, linestyle=":", alpha=0.7)
+        eje_izq.legend()
 
-    # Panel derecho: todos los tamaños en escala log-log, con ajuste empírico t = a * n^b
-    b, log_a = np.polyfit(np.log10(tamanios), np.log10(tiempos_promedio), 1)
-    n_ajuste = np.logspace(np.log10(tamanios[0]), np.log10(tamanios[-1]), 100)
-    t_ajuste = (10 ** log_a) * n_ajuste ** b
-
-    ejeLog.plot(tamanios, tiempos_promedio, marker="o", color="steelblue", linewidth=2,
-                label="Tiempo real (solver)")
-    ejeLog.plot(n_ajuste, t_ajuste, color="green", linewidth=2, linestyle=":",
-                label=f"Ajuste empírico ~ n^{b:.2f}")
-    
-    ejeLog.set_xscale("log")
-    ejeLog.set_yscale("log")
-    ejeLog.set_ylim(min(tiempos_promedio) / 2, max(tiempos_promedio) * 10)
-    ejeLog.set_title("Escala logarítmica, todos los tamaños")
-    ejeLog.set_xlabel("n (cantidad de elementos, escala log)")
-    ejeLog.set_ylabel("Tiempo (s, escala log)")
-
-    for eje in (ejeLineal, ejeLog):
-        eje.legend()
-        eje.grid(True, which="both")
+    # Panel Derecho: Escalabilidad completa
+    eje_der.plot(tamanios, tiempos_promedio, marker="o", color="steelblue", linewidth=2, label="Tiempo real (solver)")
+    eje_der.set_title("Escalabilidad del Solver (todos los tamaños)")
+    eje_der.set_xlabel("n (cantidad de elementos)")
+    eje_der.set_ylabel("Tiempo (s)")
+    eje_der.grid(True, linestyle=":", alpha=0.7)
+    eje_der.legend()
 
     figura.suptitle("Problema 4 - Programación Lineal: Tiempo del solver vs n")
     figura.tight_layout()
-    figura.savefig(ARCHIVO_PNG, dpi=150)
+    plt.savefig(ARCHIVO_PNG, dpi=150)
     plt.show()
-
-    print("Gráfico guardado en " + ARCHIVO_PNG)
+    print(f"Gráfico guardado en {ARCHIVO_PNG}")
 
 if __name__ == "__main__":
     tamanios, capacidades, tiempos_promedio = medir_tiempos()
