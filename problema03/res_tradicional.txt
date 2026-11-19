@@ -1,0 +1,15 @@
+Resultados - Problema 3: Programación Dinámica
+Algoritmo: Mochila tradicional
+Repeticiones por instancia: 3
+Tiempo medido: solamente ejecución del algoritmo
+---------------------------------------------------------------------------
+n          Capacidad       Beneficio Total      Tiempo Promedio (s) 
+---------------------------------------------------------------------------
+10         500             5272                 0.001197            
+15         750             6454                 0.002646            
+20         1000            11280                0.005035            
+25         1250            14515                0.006665            
+30         1500            14445                0.015017            
+40         2000            20663                0.020046            
+100        5000            50304                0.115366            
+1000       50000           485578               13.980140           
