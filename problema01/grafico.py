@@ -6,8 +6,6 @@ import numpy as np
 from scipy.optimize import curve_fit
 from codigo import Mochila, backtracking, fuerzaBruta, leerArchivo
 
-TAMANIOS_FUERZA_BRUTA = list(range(10, 27, 2)) # Hasta 26 aprox
-TAMANIOS_BACKTRACKING = list(range(10, 41, 2)) # Hasta 40 aprox
 REPETICIONES = 3
 
 def medirTiempo(algoritmo, pesoMochila, elementos):
@@ -19,21 +17,22 @@ def medirTiempo(algoritmo, pesoMochila, elementos):
     return mejorTiempo
 
 def modelo_teorico(n, c):
-    # n * 2^n casted to float to avoid overflow in numpy
     return c * n * (2.0 ** n)
 
 def graficarAjuste(eje, tamanios, tiempos, color, titulo, limitarAlMedido=False):
+    if not tamanios:
+        return
+        
     x_data = np.array(tamanios, dtype=float)
     y_data = np.array(tiempos, dtype=float)
     
-    # Ajuste por mínimos cuadrados real
     popt, _ = curve_fit(modelo_teorico, x_data, y_data)
     c_opt = popt[0]
     
     x_plot = np.linspace(min(tamanios), max(tamanios), 100)
     y_teorico = modelo_teorico(x_plot, c_opt)
 
-    eje.plot(x_plot, y_teorico, color="#6b6a63", linewidth=2, linestyle="--", label=f"Ajuste $c \\cdot n 2^n$")
+    eje.plot(x_plot, y_teorico, color="#6b6a63", linewidth=2, linestyle="--", label=r"Ajuste $c \cdot n 2^n$")
     eje.plot(tamanios, tiempos, color=color, linewidth=2, marker="o", markersize=7, label="Medido")
     
     if limitarAlMedido:
@@ -44,32 +43,53 @@ def graficarAjuste(eje, tamanios, tiempos, color, titulo, limitarAlMedido=False)
     eje.set_ylabel("Tiempo (s)")
     eje.legend(loc="upper left")
 
+def guardarResultados(ruta, tamanios_fb, tiempos_fb, tamanios_bt, tiempos_bt):
+    todos_tamanios = sorted(list(set(tamanios_fb + tamanios_bt)))
+    dict_fb = dict(zip(tamanios_fb, tiempos_fb))
+    dict_bt = dict(zip(tamanios_bt, tiempos_bt))
+    
+    with open(ruta, "w", newline="") as archivo:
+        escritor = csv.writer(archivo)
+        escritor.writerow(["n", "fuerza_bruta_s", "backtracking_s"])
+        for n in todos_tamanios:
+            escritor.writerow([n, dict_fb.get(n, ""), dict_bt.get(n, "")])
+
 if __name__ == "__main__":
     directorio = os.path.dirname(os.path.abspath(__file__))
     dir_mochilas = os.path.join(os.path.dirname(directorio), "Mochilas")
     
+    tamanios_fb_reales = []
     tiemposFuerzaBruta = []
+    
+    tamanios_bt_reales = []
     tiemposBacktracking = []
 
-    for n in TAMANIOS_BACKTRACKING:
+    for n in [10, 15, 20, 25, 30, 40]: 
         ruta = os.path.join(dir_mochilas, f"mochila{n}.txt")
         if not os.path.exists(ruta):
             continue
             
         pesoMochila, elementos = leerArchivo(ruta)
         
-        if n in TAMANIOS_FUERZA_BRUTA:
+        if n <= 26:
             t_fb = medirTiempo(fuerzaBruta, pesoMochila, elementos)
             tiemposFuerzaBruta.append(t_fb)
+            tamanios_fb_reales.append(n)
             print(f"Fuerza bruta  | n = {n:2d} | {t_fb:.6f} s", flush=True)
             
-        t_bt = medirTiempo(backtracking, pesoMochila, elementos)
-        tiemposBacktracking.append(t_bt)
-        print(f"Backtracking  | n = {n:2d} | {t_bt:.6f} s", flush=True)
+        if n <= 40:
+            t_bt = medirTiempo(backtracking, pesoMochila, elementos)
+            tiemposBacktracking.append(t_bt)
+            tamanios_bt_reales.append(n)
+            print(f"Backtracking  | n = {n:2d} | {t_bt:.6f} s", flush=True)
 
+    # Exportar CSV
+    guardarResultados(os.path.join(directorio, "tiempos.csv"), tamanios_fb_reales, tiemposFuerzaBruta, tamanios_bt_reales, tiemposBacktracking)
+
+    # Graficar
     figura, (ejeFuerzaBruta, ejeBacktracking) = plt.subplots(1, 2, figsize=(12, 5.5))
-    graficarAjuste(ejeFuerzaBruta, TAMANIOS_FUERZA_BRUTA, tiemposFuerzaBruta, "#2a78d6", "Fuerza bruta")
-    graficarAjuste(ejeBacktracking, TAMANIOS_BACKTRACKING, tiemposBacktracking, "#eb6834", "Backtracking", limitarAlMedido=True)
+    graficarAjuste(ejeFuerzaBruta, tamanios_fb_reales, tiemposFuerzaBruta, "#2a78d6", "Fuerza bruta")
+    graficarAjuste(ejeBacktracking, tamanios_bt_reales, tiemposBacktracking, "#eb6834", "Backtracking", limitarAlMedido=True)
     
     figura.tight_layout()
     figura.savefig(os.path.join(directorio, "grafico_problema01.png"), dpi=150)

@@ -1,23 +1,27 @@
-from random import randint
+import os
+import random
 
-def crear_mochila(n):
-    nombre="mochila"+str(n)+".txt"
-    arch=open(nombre,"w")
-    cap=n*50
-    arch.write(str(cap)+"\n")
-    for i in range (n):
-        peso=randint(1,200);
-        benef=randint(1,1000);
-        arch.write(str(peso)+","+str(benef)+"\n")
-    arch.close()
+SEMILLA = 42
+TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 1000]
+
+def crear_mochila(n, carpeta_salida="Mochilas"):
+    os.makedirs(carpeta_salida, exist_ok=True)
+    ruta = os.path.join(carpeta_salida, f"mochila{n}.txt")
     
-crear_mochila(1000)
+    random.seed(SEMILLA + n)
+    
+    capacidad = n * 50
+    with open(ruta, "w") as arch:
+        arch.write(f"{capacidad}\n")
+        for _ in range(n):
+            peso = random.randint(1, 200)
+            beneficio = random.randint(1, 1000)
+            arch.write(f"{peso},{beneficio}\n")
+    print(f"Generado: {ruta}")
 
-# Esta función crea una mochila con una lista del tamaño indicado como parámetro
-# Los beneficios están en el rango 1-1000
-# Los pesos están en el rango 1-200
-# La capacidad de la mochila es tamaño * 50: aprox, la mitad de los elementos cabrán en la mochila
-#
-# Se genera un archivo cuya primera línea es la capacidad de la mochila
-# Las líneas siguientes son pares ordenados (peso, beneficio) de cada elemento.
-
+if __name__ == "__main__":
+    dir_raiz = os.path.dirname(os.path.abspath(__file__))
+    carpeta_mochilas = os.path.join(dir_raiz, "Mochilas")
+    
+    for n in TAMANIOS:
+        crear_mochila(n, carpeta_mochilas)
