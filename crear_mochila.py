@@ -2,7 +2,7 @@ import os
 import random
 
 SEMILLA = 42
-TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 1000]
+TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 200, 300, 400, 500, 600, 700, 800, 1000]
 
 def crear_mochila(n, carpeta_salida="Mochilas"):
     os.makedirs(carpeta_salida, exist_ok=True)
