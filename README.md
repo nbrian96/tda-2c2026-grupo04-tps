@@ -68,6 +68,8 @@ python3 codigo.py
 python3 grafico.py
 ```
 
+---
+
 
 ## PROBLEMA 2 – GREEDY
 
@@ -89,6 +91,7 @@ python3 problema02.py ../Mochilas/mochila1000.txt
 
 # Medir tiempos, realizar regresión O(n log n) y generar gráficos
 python3 grafico.py
+```
 
 ---
 
