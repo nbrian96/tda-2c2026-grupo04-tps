@@ -1,0 +1,5 @@
+Valor total: 110
+Peso utilizado: 75
+Actuo garantia de calidad: SI
+Elementos seleccionados (id, peso, valor):
+5,75,110

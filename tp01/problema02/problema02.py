@@ -4,8 +4,6 @@ import os
 import sys
 from dataclasses import dataclass
 
-import crear_mochila
-
 
 @dataclass
 class Elemento:
@@ -57,11 +55,6 @@ def cargar_mochila_desde_archivo(ruta_archivo: str) -> tuple[int, list[Elemento]
     return capacidad, elementos
 
 
-def generar_mochila(n: int) -> tuple[int, list[Elemento]]:
-    crear_mochila.crear_mochila(n)
-    return cargar_mochila_desde_archivo(f"mochila{n}.txt")
-
-
 def resolver_mochila_greedy(capacidad: int, elementos: list[Elemento]) -> ResultadoMochila:
     candidatos = [elem for elem in elementos if elem.peso <= capacidad]
     if not candidatos:
@@ -101,10 +94,18 @@ def resolver_mochila_greedy(capacidad: int, elementos: list[Elemento]) -> Result
 def main():
     if len(sys.argv) == 1:
         capacidad, elementos = obtener_mochila_manual_garantia()
+        nombre_salida = "solucion_manual_greedy.txt"
     elif sys.argv[1].isdigit():
-        capacidad, elementos = generar_mochila(int(sys.argv[1]))
+        n = sys.argv[1]
+        ruta = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Mochilas", f"mochila{n}.txt")
+        if not os.path.exists(ruta):
+            print(f"Error: No se encontró el archivo {ruta}. Generá los datos unificados primero.")
+            sys.exit(1)
+        capacidad, elementos = cargar_mochila_desde_archivo(ruta)
+        nombre_salida = f"solucion_greedy_n{n}.txt"
     elif os.path.isfile(sys.argv[1]):
         capacidad, elementos = cargar_mochila_desde_archivo(sys.argv[1])
+        nombre_salida = "solucion_greedy.txt"
     else:
         print("Uso: python3 problema02.py [n | archivo.txt]")
         sys.exit(1)
@@ -116,6 +117,18 @@ def main():
     print(f"Peso:      {resultado.peso_total}")
     print(f"Valor:     {resultado.valor_total}")
     print(f"Garantía:  {'SÍ' if resultado.actuo_garantia else 'NO'}")
+
+    # Guardar resultados en archivo
+    ruta_salida = os.path.join(os.path.dirname(os.path.abspath(__file__)), nombre_salida)
+    with open(ruta_salida, "w") as f:
+        f.write(f"Valor total: {resultado.valor_total}\n")
+        f.write(f"Peso utilizado: {resultado.peso_total}\n")
+        f.write(f"Actuo garantia de calidad: {'SI' if resultado.actuo_garantia else 'NO'}\n")
+        f.write("Elementos seleccionados (id, peso, valor):\n")
+        for e in resultado.elementos_seleccionados:
+            f.write(f"{e.id},{e.peso},{e.valor}\n")
+            
+    print(f"\nSolución guardada en {nombre_salida}")
 
 
 if __name__ == "__main__":
