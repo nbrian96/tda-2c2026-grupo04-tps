@@ -1,4 +1,52 @@
-# TRABAJO PRÁCTICO 1
+# Trabajo Práctico 1: El Problema de la Mochila 0-1
+**Teoría de Algoritmos – 2C2026 (FIUBA)**
+
+Este repositorio contiene las implementaciones, generación de datos, mediciones de rendimiento y análisis empírico de cuatro enfoques algorítmicos distintos para resolver el Problema de la Mochila 0-1: **Fuerza Bruta / Backtracking**, **Greedy**, **Programación Dinámica** (planteo tradicional y alternativo) y **Programación Lineal Entera**.
+
+---
+
+## Requisitos del Entorno
+
+* **Sistema Operativo:** Probado en Linux (Ubuntu / Debian / Linux Mint), macOS y Windows.
+* **Lenguaje:** Python 3.9 o superior.
+* **Bibliotecas externas:** `matplotlib`, `numpy`, `scipy` y `pulp` (incluye el solver CBC).
+
+### Instalación de dependencias
+
+En sistemas basados en Debian/Ubuntu/Linux Mint (recomendado):
+```bash
+sudo apt update && sudo apt install python3-matplotlib python3-numpy python3-scipy python3-pulp
+```
+
+O mediante `pip` (utilizando un entorno virtual `venv`):
+```bash
+pip install matplotlib numpy scipy pulp
+```
+
+---
+
+## Estructura del Proyecto y Generación de Datos
+
+Todos los algoritmos evalúan exactamente las mismas instancias para garantizar la reproducibilidad y permitir una comparación justa entre paradigmas.
+
+```text
+tp01/
+├── crear_mochila.py        # Generador unificado de datasets (semilla determinista)
+├── Mochilas/               # Carpeta generada con las instancias compartidas (mochila10.txt ... mochila1000.txt)
+├── problema01/             # Fuerza Bruta y Backtracking con poda
+├── problema02/             # Algoritmo Greedy con garantía de calidad 1/2
+├── problema03/             # Programación Dinámica (Planteo Tradicional y Alternativo)
+└── problema04/             # Programación Lineal Entera (PuLP + Solver CBC)
+```
+
+### Paso 0: Generar el set de datos común (Obligatorio antes de ejecutar)
+
+Desde la carpeta `tp01/`, ejecutar:
+```bash
+cd tp01
+python3 crear_mochila.py
+```
+Este script creará la carpeta `tp01/Mochilas/` con todas las instancias estandarizadas utilizando una semilla fija (`SEMILLA + n`).
 
 ---
 
@@ -9,32 +57,20 @@
 3. Calcular el orden de complejidad temporal de los algoritmos desarrollados.
 4. Aplicarlos a diferentes sets de datos obtenidos con el código adjunto `crear_mochila.py`, de tamaños adecuados para poder comparar la curva de tiempos de ejecución teórica y real en ambos algoritmos.
 
-### Requisitos
- 
-- Python 3.6 o superior
-- matplotlib (solo para `grafico.py`):
+Ubicarse dentro de la carpeta `tp01/problema01/`:
+
 ```bash
-pip install matplotlib
-```
- 
-### Ejecución
- 
-Desde la carpeta del proyecto:
- 
-```bash
-# Resolver Mochilas/mochila5.txt con fuerza bruta y backtracking
+cd tp01/problema01
+
+# Resolver tp01/Mochilas/mochila10.txt con ambos algoritmos y exportar la solución
 python3 codigo.py
- 
-# Generar un archivo de mochila aleatorio
-python3 crear_mochila.py
- 
-# Medir tiempos y generar tiempos.csv y grafico.png
+
+# Medir tiempos de ejecución, ajustar curvas teóricas O(n·2^n) y generar tiempos.csv y grafico_problema01.png
 python3 grafico.py
 ```
- 
-En Linux/macOS usar `python3` en lugar de `python`.
 
 ---
+
 
 ## PROBLEMA 2 – GREEDY
 
@@ -43,28 +79,20 @@ En Linux/macOS usar `python3` en lugar de `python`.
 3. Aplicarlo a diferentes sets de datos obtenidos con el código adjunto `crear_mochila.py`, de tamaños adecuados para poder comparar la curva de tiempos de ejecución teórica y real.
 4. Aplicarlo a un set de datos creado manualmente donde actúe la garantía de calidad.
 
-### Requisitos
- 
-- Python 3.7 o superior
-- No necesita instalar bibliotecas externas
-- `problema02.py` y `crear_mochila.py` deben estar en la misma carpeta
 
-### Ejecución
- 
-Desde la carpeta del proyecto:
- 
+Ubicarse dentro de la carpeta `tp01/problema02/`:
 ```bash
-# Ejemplo manual de 7 elementos (capacidad 100), donde actúa la garantía
+cd tp01/problema02
+
+# Ejecutar el ejemplo manual donde actúa la garantía de calidad 1/2
 python3 problema02.py
- 
-# Generar una mochila aleatoria de n elementos y resolverla (ej: 1000)
-python3 problema02.py 1000
- 
-# Resolver una mochila desde un archivo
-python3 problema02.py mochila1000.txt
+
+# Resolver una instancia específica desde la carpeta compartida
+python3 problema02.py ../Mochilas/mochila1000.txt
+
+# Medir tiempos, realizar regresión O(n log n) y generar gráficos
+python3 grafico.py
 ```
- 
-En Linux/macOS usar `python3` en lugar de `python`.
 
 ---
 
@@ -77,52 +105,27 @@ En Linux/macOS usar `python3` en lugar de `python`.
 3. Aplicarlos a diferentes sets de datos obtenidos con el código adjunto `crear_mochila.py`, de tamaños adecuados para poder comparar la curva de tiempos de ejecución teórica y real en ambos algoritmos.
 4. Aplicar ambos algoritmos a diferentes sets de datos obtenidos con el código adjunto `crear_mochila.py`, de tamaños adecuados para poder comparar los tiempos de ejecución de ambos algoritmos. Analizar los resultados obtenidos.
 
-## Requisitos
- 
-- Python 3.6 o superior
-- matplotlib (solo para generar los gráficos):
+Ambos algoritmos implementan optimización espacial ($O(C)$ y $O(B)$ respectivamente) para evitar desbordamientos de memoria en instancias grandes ($n=1000$).
+
+Ubicarse dentro de la carpeta `tp01/problema03/`:
+
 ```bash
-pip install matplotlib
-```
- 
-Estructura esperada:
- 
-```
-.
-└── problema03/
-    ├── generar_datos.py
-    ├── medir_tiempos.py
-    ├── mochila_tradicional.py
-    ├── mochila_alternativo.py
-    └── graficar.py
-```
- 
-## Ejecución
- 
-Desde la carpeta `problema03/`, en este orden:
- 
-```bash
-# 1. Generar los sets de datos (mochila10.txt ... mochila1000.txt)
-python3 generar_datos.py
- 
-# 2. Medir tiempos (genera res_tradicional.txt y res_alternativo.txt)
+cd tp01/problema03
+
+# 1. Medir tiempos de ambos planteos (genera res_tradicional.txt y res_alternativo.txt)
+# Nota: La evaluación hasta n=1000 demora unos minutos debido a la complejidad pseudo-polinomial.
 python3 medir_tiempos.py
- 
-# 3. Generar los gráficos (tradicional.png, alternativo.png, comparacion.png)
-python3 graficar.py
+
+# 2. Generar los gráficos comparativos y ajustes O(nC) y O(nB) (tradicional.png, alternativo.png, comparacion.png)
+python3 graficar_tiempos.py
 ```
 
-
-### Resolver una sola mochila
- 
+**Ejecución individual sobre una instancia:**
 ```bash
-python3 mochila_tradicional.py mochila10.txt
-python3 mochila_alternativo.py mochila10.txt
+python3 mochila_tradicional.py ../Mochilas/mochila10.txt
+python3 mochila_alternativo.py ../Mochilas/mochila10.txt
 ```
- 
-Cada comando imprime el beneficio máximo. Ambos deben dar el mismo valor.
- 
-En Linux/macOS usar `python3` en lugar de `python`.
+*(Ambos comandos imprimen el beneficio máximo y deben devolver exactamente el mismo valor).*
 
 ---
 
@@ -132,44 +135,14 @@ En Linux/macOS usar `python3` en lugar de `python`.
 2. Calcular el orden de complejidad temporal del algoritmo desarrollado.
 3. Aplicarlos a diferentes sets de datos obtenidos con el código adjunto `crear_mochila.py`, de tamaños adecuados para poder comparar la curva de tiempos de ejecución teórica y real.
 
----
-
-
-## Requisitos
- 
-- Python 3.9 o superior
-- PuLP (incluye el solver CBC) y matplotlib:
+Ubicarse dentro de la carpeta `tp01/problema04/`:
 ```bash
-pip install pulp matplotlib
-```
- 
-Estructura esperada:
- 
-```
-.
-└── problema04/
-    ├── generar_datos.py
-    ├── graficar_tiempos.py
-    └── problema04.py
-```
- 
-## Ejecución
- 
-Desde la carpeta `problema04/`, en este orden:
- 
-```bash
-# 1. Generar los sets de datos (mochila10.txt, mochila100.txt, ...)
-python3 generar_datos.py
- 
-# 2. Medir tiempos del solver y generar resultados_PL.txt y tiempos_PL.png
+cd tp01/problema04
+
+# Medir tiempos del solver CBC, exportar resultados_PL.txt y generar tiempos_PL.png
 python3 graficar_tiempos.py
 ```
- 
-`problema04.py` contiene las funciones del modelo (`leer_mochila`, `construir_modelo`, `resolver_mochila`) y es importado por `graficar_tiempos.py`; no se ejecuta por separado.
- 
-Los tamaños a evaluar están en `TAMANIOS` dentro de `generar_datos.py`. Los tamaños grandes pueden tardar mucho, así que para una prueba rápida conviene reducir la lista (por ejemplo, `[10, 100, 1000]`).
- 
-En Linux/macOS usar `python3` en lugar de `python`.
+*(Nota: `problema04.py` contiene la formulación matemática del modelo y es importado directamente por `graficar_tiempos.py`; no requiere ejecución independiente).*
 
 ## CONCLUSIÓN
 

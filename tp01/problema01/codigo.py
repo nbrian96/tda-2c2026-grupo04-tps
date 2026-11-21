@@ -101,26 +101,19 @@ def backtracking(mochila, elementos, mejorResultado):
     return resultadoADevolver
 
 if __name__ == "__main__":
-    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Mochilas", "mochila5.txt")
+    # Ruta al set de datos unificado en tp01/Mochilas
+    ruta = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Mochilas", "mochila10.txt")
     pesoMochila, elementos = leerArchivo(ruta)
 
-    print("Peso de la mochila:", pesoMochila)
-    print("Cantidad de elementos:", len(elementos))
-
-    for elemento in elementos[:5]:
-        print("Peso:", elemento.peso, "- Valor:", elemento.valor)
-
-    print("-------------------------------------------------------")
     mochila = Mochila(pesoMochila)
     resultadoObtenido = fuerzaBruta(mochila.copiar(), elementos, mochila.copiar())
-    print("Peso disponible resultado:", resultadoObtenido.pesoDisponible, "- Valor conseguido:", resultadoObtenido.valorActual)
-    print("Elementos colocados:")
-    for elemento in resultadoObtenido.itemsDentro:
-        print("Peso:", elemento.peso, "- Valor:", elemento.valor)
-
-    print("-------------------------------------------------------")
     resultadoBacktracking = backtracking(mochila.copiar(), elementos, mochila.copiar())
-    print("Backtracking - Peso disponible resultado:", resultadoBacktracking.pesoDisponible, "- Valor conseguido:", resultadoBacktracking.valorActual)
-    print("Elementos colocados:")
-    for elemento in resultadoBacktracking.itemsDentro:
-        print("Peso:", elemento.peso, "- Valor:", elemento.valor)
+    
+    # Guardar la solución obtenida (requerimiento de la entrega)
+    ruta_salida = os.path.join(os.path.dirname(os.path.abspath(__file__)), "solucion_mochila10.txt")
+    with open(ruta_salida, "w") as f:
+        f.write(f"Valor: {resultadoBacktracking.valorActual}\n")
+        f.write(f"Peso utilizado: {pesoMochila - resultadoBacktracking.pesoDisponible}\n")
+        f.write("Elementos:\n")
+        for e in resultadoBacktracking.itemsDentro:
+            f.write(f"{e.peso},{e.valor}\n")
