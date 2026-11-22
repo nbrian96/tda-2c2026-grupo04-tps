@@ -55,10 +55,10 @@ def algoritmo_sahni(items_ordenados, capacidad_mochila, k):
                 
                 if beneficio_total_actual > z_h:
                     z_h = beneficio_total_actual
-                    X_h = list(indices_M) + X
+                    x_h = list(indices_M) + X
                     
     ids_originales_elegidos = []
-    for pos in X_h:
+    for pos in x_h:
         ids_originales_elegidos.append(items_ordenados[pos]["id"])
 
     return z_h, ids_originales_elegidos
