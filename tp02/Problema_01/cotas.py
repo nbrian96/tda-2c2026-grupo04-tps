@@ -1,5 +1,3 @@
-import math
-
 def buscar_elemento_critico(items_ordenados, capacidad_mochila):
     """Recibe items ordenados de mayor a menor por el cociente de pi/wi y va metiendo los items en la mochila
     hasta que se encuentra el elemento critico, es decir, el primer item que no cabe en la mochila
@@ -42,19 +40,18 @@ def calcular_cota_relajacion_lineal(items_ordenados, capacidad_mochila):
 
     aporte_fraccionario = c_sombrero * (p_s / w_s)
     z_continuo = suma_beneficios_previos + aporte_fraccionario
-    u1 = suma_beneficios_previos + math.floor(aporte_fraccionario)
-    
+    u1 = suma_beneficios_previos + (c_sombrero * p_s) // w_s    
     return z_continuo, u1
 
 def calcular_cota_martello_toth(items_ordenados, capacidad_mochila):
     """
-    Calcula la cota superior U2 (Martello y Toth, 1990). Evalúa excluir el elemento crítico (W1) o incluirlo a la fuerza (W2)..
+    Calcula la cota superior U2 (Martello y Toth, 1990). Evalúa excluir el elemento crítico (W1) o incluirlo a la fuerza (W2)
     """ 
     s, suma_beneficios_previos, c_sombrero = buscar_elemento_critico(items_ordenados, capacidad_mochila)
     n = len(items_ordenados)
 
     if s is None:
-        return suma_beneficios_previos, suma_beneficios_previos
+        return suma_beneficios_previos
     
     item_critico = items_ordenados[s]
     p_s = item_critico["beneficio"]
@@ -65,7 +62,7 @@ def calcular_cota_martello_toth(items_ordenados, capacidad_mochila):
         p_siguiente = item_siguiente["beneficio"]
         w_siguiente = item_siguiente["peso"]
 
-        w1 = suma_beneficios_previos + math.floor(c_sombrero * (p_siguiente / w_siguiente))
+        w1 = suma_beneficios_previos + (c_sombrero * p_siguiente) // w_siguiente
     else:
         w1 = suma_beneficios_previos
 
@@ -75,8 +72,7 @@ def calcular_cota_martello_toth(items_ordenados, capacidad_mochila):
         w_anterior = item_anterior["peso"]
 
         peso_faltante = w_s - c_sombrero
-        ajuste = p_s - (peso_faltante * (p_anterior / w_anterior))
-        w2 = suma_beneficios_previos + math.floor(ajuste)
+        w2 = suma_beneficios_previos + (p_s * w_anterior - peso_faltante * p_anterior) // w_anterior
     else:
         w2 = p_s if w_s <= capacidad_mochila else 0
 
