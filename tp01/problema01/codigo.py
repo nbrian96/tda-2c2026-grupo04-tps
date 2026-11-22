@@ -101,7 +101,7 @@ def backtracking(mochila, elementos, mejorResultado):
     return resultadoADevolver
 
 if __name__ == "__main__":
-    # Ruta al set de datos unificado en la raíz
+    # Ruta al set de datos unificado en tp01/Mochilas
     ruta = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Mochilas", "mochila10.txt")
     pesoMochila, elementos = leerArchivo(ruta)
 
