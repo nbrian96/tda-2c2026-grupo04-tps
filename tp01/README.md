@@ -30,7 +30,11 @@ pip install matplotlib numpy scipy pulp
 Todos los algoritmos evalúan exactamente las mismas instancias para garantizar la reproducibilidad y permitir una comparación justa entre paradigmas.
 
 ```text
+<<<<<<< HEAD
 tp01/
+=======
+.
+>>>>>>> 0232afd (Se agrega archivo readme corregido del tp1)
 ├── crear_mochila.py        # Generador unificado de datasets (semilla determinista)
 ├── Mochilas/               # Carpeta generada con las instancias compartidas (mochila10.txt ... mochila1000.txt)
 ├── problema01/             # Fuerza Bruta y Backtracking con poda
@@ -41,12 +45,20 @@ tp01/
 
 ### Paso 0: Generar el set de datos común (Obligatorio antes de ejecutar)
 
+<<<<<<< HEAD
 Desde la carpeta `tp01/`, ejecutar:
 ```bash
 cd tp01
 python3 crear_mochila.py
 ```
 Este script creará la carpeta `tp01/Mochilas/` con todas las instancias estandarizadas utilizando una semilla fija (`SEMILLA + n`).
+=======
+Desde la **raíz del proyecto**, ejecutar:
+```bash
+python3 crear_mochila.py
+```
+Este script creará la carpeta `Mochilas/` con todas las instancias estandarizadas utilizando una semilla fija (`SEMILLA + n`).
+>>>>>>> 0232afd (Se agrega archivo readme corregido del tp1)
 
 ---
 
@@ -57,12 +69,21 @@ Este script creará la carpeta `tp01/Mochilas/` con todas las instancias estanda
 3. Calcular el orden de complejidad temporal de los algoritmos desarrollados.
 4. Aplicarlos a diferentes sets de datos obtenidos con el código adjunto `crear_mochila.py`, de tamaños adecuados para poder comparar la curva de tiempos de ejecución teórica y real en ambos algoritmos.
 
+<<<<<<< HEAD
 Ubicarse dentro de la carpeta `tp01/problema01/`:
 
 ```bash
 cd tp01/problema01
 
 # Resolver tp01/Mochilas/mochila10.txt con ambos algoritmos y exportar la solución
+=======
+Ubicarse dentro de la carpeta `problema01/`:
+
+```bash
+cd problema01
+
+# Resolver Mochilas/mochila10.txt con ambos algoritmos y exportar la solución
+>>>>>>> 0232afd (Se agrega archivo readme corregido del tp1)
 python3 codigo.py
 
 # Medir tiempos de ejecución, ajustar curvas teóricas O(n·2^n) y generar tiempos.csv y grafico_problema01.png
@@ -80,9 +101,15 @@ python3 grafico.py
 4. Aplicarlo a un set de datos creado manualmente donde actúe la garantía de calidad.
 
 
+<<<<<<< HEAD
 Ubicarse dentro de la carpeta `tp01/problema02/`:
 ```bash
 cd tp01/problema02
+=======
+Ubicarse dentro de la carpeta `problema02/`:
+```bash
+cd problema02
+>>>>>>> 0232afd (Se agrega archivo readme corregido del tp1)
 
 # Ejecutar el ejemplo manual donde actúa la garantía de calidad 1/2
 python3 problema02.py
@@ -107,10 +134,17 @@ python3 grafico.py
 
 Ambos algoritmos implementan optimización espacial ($O(C)$ y $O(B)$ respectivamente) para evitar desbordamientos de memoria en instancias grandes ($n=1000$).
 
+<<<<<<< HEAD
 Ubicarse dentro de la carpeta `tp01/problema03/`:
 
 ```bash
 cd tp01/problema03
+=======
+Ubicarse dentro de la carpeta `problema03/`:
+
+```bash
+cd problema03
+>>>>>>> 0232afd (Se agrega archivo readme corregido del tp1)
 
 # 1. Medir tiempos de ambos planteos (genera res_tradicional.txt y res_alternativo.txt)
 # Nota: La evaluación hasta n=1000 demora unos minutos debido a la complejidad pseudo-polinomial.
@@ -135,9 +169,15 @@ python3 mochila_alternativo.py ../Mochilas/mochila10.txt
 2. Calcular el orden de complejidad temporal del algoritmo desarrollado.
 3. Aplicarlos a diferentes sets de datos obtenidos con el código adjunto `crear_mochila.py`, de tamaños adecuados para poder comparar la curva de tiempos de ejecución teórica y real.
 
+<<<<<<< HEAD
 Ubicarse dentro de la carpeta `tp01/problema04/`:
 ```bash
 cd tp01/problema04
+=======
+Ubicarse dentro de la carpeta `problema04/`:
+```bash
+cd problema04
+>>>>>>> 0232afd (Se agrega archivo readme corregido del tp1)
 
 # Medir tiempos del solver CBC, exportar resultados_PL.txt y generar tiempos_PL.png
 python3 graficar_tiempos.py

@@ -7,10 +7,9 @@ from sahni import algoritmo_sahni
 
 from mochila_tradicional import mochila_tradicional
 
-# Usamos los mismos tamaños que generaste en crear_mochila.py
 TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 200, 300, 400, 500, 600, 700, 800, 1000]
 REPETICIONES = 3
-K_SAHNI = 1  # Parámetro k de Sahni (con k=1 la complejidad es O(n^2) y garantía 1/2)
+K_SAHNI = 1  # Parámetro k de Sahni 
 
 
 def leer_instancia_mochila(ruta_archivo):
@@ -23,7 +22,7 @@ def leer_instancia_mochila(ruta_archivo):
         capacidad = int(archivo.readline().strip())
         pesos = []
         beneficios = []
-        elementos_tuplas = []  # Para pasarle directo a mochila_tradicional del TP1
+        elementos_tuplas = []  
 
         for linea in archivo:
             linea = linea.strip()
@@ -89,11 +88,17 @@ def main():
         u2 = calcular_cota_martello_toth(items_ord, capacidad)
 
         # 3. Calculamos Sahni y medimos su tiempo (ordenamiento + esquema S(k))
-        val_sahni, _, t_sahni = medir_sahni(items_ord, capacidad, K_SAHNI, REPETICIONES)
+        val_sahni, ids_sahni, t_sahni = medir_sahni(items_ord, capacidad, K_SAHNI, REPETICIONES)        
         tiempo_total_sahni = t_ord + t_sahni
 
         # 4. Calculamos el óptimo exacto usando DP del TP1
         val_optimo = mochila_tradicional(elementos_tuplas, capacidad)
+
+        assert val_sahni <= val_optimo <= u2 <= u1
+        assert 2 * val_sahni >= val_optimo
+        assert len(set(ids_sahni)) == len(ids_sahni)
+        assert sum(pesos[i - 1] for i in ids_sahni) <= capacidad
+        assert sum(beneficios[i - 1] for i in ids_sahni) == val_sahni
 
         resultados.append((n, capacidad, val_sahni, val_optimo, u2, u1, z_continuo, tiempo_total_sahni))
 
