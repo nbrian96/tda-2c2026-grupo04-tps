@@ -1,3 +1,5 @@
+import math
+
 def buscar_elemento_critico(items_ordenados, capacidad_mochila):
     """Recibe items ordenados de mayor a menor por el cociente de pi/wi y va metiendo los items en la mochila
     hasta que se encuentra el elemento critico, es decir, el primer item que no cabe en la mochila
@@ -25,24 +27,24 @@ def buscar_elemento_critico(items_ordenados, capacidad_mochila):
     return None, suma_beneficios_previos, capacidad_residual
 
 
-    def calcular_cota_relajacion_lineal(items_ordenados, capacidad_mochila):
-        """
-        Calcula la cota superior U1 (Dantzig, 1957) y devuelve tanto el valor continuo exacto z(C(KP)) como la cota entera U1.
-        """ 
-        s, suma_beneficios_previos, c_sombrero = buscar_elemento_critico(items_ordenados, capacidad_mochila)
+def calcular_cota_relajacion_lineal(items_ordenados, capacidad_mochila):
+    """
+    Calcula la cota superior U1 (Dantzig, 1957) y devuelve tanto el valor continuo exacto z(C(KP)) como la cota entera U1.
+    """ 
+    s, suma_beneficios_previos, c_sombrero = buscar_elemento_critico(items_ordenados, capacidad_mochila)
 
-        if s is None:
-            return suma_beneficios_previos, suma_beneficios_previos
+    if s is None:
+        return suma_beneficios_previos, suma_beneficios_previos
 
-        item_critico = items_ordenados[s]
-        p_s = item_critico["beneficio"]
-        w_s = item_critico["peso"]
+    item_critico = items_ordenados[s]
+    p_s = item_critico["beneficio"]
+    w_s = item_critico["peso"]
 
-        aporte_fraccionario = c_sombrero * (p_s / w_s)
-        z_continuo = suma_beneficios_previos + aporte_fraccionario
-        u1 = suma_beneficios_previos + math.floor(aporte_fraccionario)
-        
-        return z_continuo, u1
+    aporte_fraccionario = c_sombrero * (p_s / w_s)
+    z_continuo = suma_beneficios_previos + aporte_fraccionario
+    u1 = suma_beneficios_previos + math.floor(aporte_fraccionario)
+    
+    return z_continuo, u1
 
 def calcular_cota_martello_toth(items_ordenados, capacidad_mochila):
     """
