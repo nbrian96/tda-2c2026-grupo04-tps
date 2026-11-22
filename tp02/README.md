@@ -21,6 +21,8 @@ pip install -r tp02/Problema_02/requirements.txt
 - `requirements.txt`: dependencias Python (`matplotlib`, `numpy`, `scipy`, `pulp`).
 - `datos.py`: lectura de instancias (`(capacidad, elementos)` con `(peso, beneficio)`) y generación determinista de sets complementarios.
 - `fptas.py`: implementación del esquema FPTAS para Mochila 0-1 con parámetro `epsilon` configurable.
+- `problema_02.py`: ejecución de los experimentos variando $n$, variando $\varepsilon$ e instancias con valores grandes; exporta resultados en `resultados/`.
+- `resultados/`: tablas en `.csv` y `.txt` generadas por `problema_02.py`.
 - `sets_datos/intermedios/`: instancias estándar para $n \in \{60, 80, 120, 150, 180\}$ (mismas reglas que `tp01/crear_mochila.py`, semilla `42 + n`).
 - `sets_datos/valores_grandes/`: instancias con pesos, beneficios y capacidades grandes para $n \in \{20, 40, 60, 80, 100\}$ (semilla `1000 + n`).
 
@@ -34,4 +36,13 @@ Para ejecutar el algoritmo FPTAS sobre una instancia individual:
 
 ```bash
 python tp02/Problema_02/fptas.py [ruta_instancia] [epsilon]
+
+# Ejemplo:
+python tp02/Problema_02/fptas.py tp01/Mochilas/mochila100.txt 0.5
+```
+
+Para correr la batería completa de experimentos y generar `resultados/`:
+
+```bash
+python tp02/Problema_02/problema_02.py
 ```
