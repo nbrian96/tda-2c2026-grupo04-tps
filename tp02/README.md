@@ -10,23 +10,25 @@ Carpeta de trabajo: `tp02/Problema_02/`
 
 ### Requisitos e instalación
 
-Se requiere Python 3.9+ (se recomienda trabajar dentro de un entorno virtual `venv` activado). Desde la raíz del repositorio:
+Se requiere Python 3.9+ (se recomienda trabajar dentro de un entorno virtual `venv` activado). Los scripts del algoritmo y experimentos usan solo la biblioteca estándar de Python; únicamente para generar los gráficos se necesita `matplotlib`:
 
 ```bash
-pip install -r tp02/Problema_02/requirements.txt
+pip install matplotlib
 ```
 
 ### Archivos y sets de datos (`tp02/Problema_02/`)
 
-- `requirements.txt`: dependencias Python (`matplotlib`, `numpy`, `scipy`, `pulp`).
-- `datos.py`: lectura de instancias (`(capacidad, elementos)` con `(peso, beneficio)`) y generación determinista de sets complementarios.
+- `datos.py`: lectura de instancias y generación determinista de sets intermedios.
 - `fptas.py`: implementación del esquema FPTAS para Mochila 0-1 con parámetro `epsilon` configurable.
-- `problema_02.py`: ejecución de los experimentos variando $n$, variando $\varepsilon$ e instancias con valores grandes; exporta resultados en `resultados/`.
-- `resultados/`: tablas en `.csv` y `.txt` generadas por `problema_02.py`.
-- `sets_datos/intermedios/`: instancias estándar para $n \in \{60, 80, 120, 150, 180\}$ (mismas reglas que `tp01/crear_mochila.py`, semilla `42 + n`).
-- `sets_datos/valores_grandes/`: instancias con pesos, beneficios y capacidades grandes para $n \in \{20, 40, 60, 80, 100\}$ (semilla `1000 + n`).
+- `mochila_tradicional.py`: implementación de Programación Dinámica exacta (base TP1) para comparar el óptimo.
+- `problema_02.py`: ejecución de los experimentos variando $n$ y $\varepsilon$; exporta resultados en `resultados/`.
+- `graficar_problema_02.py`: genera los gráficos de tiempos reales vs. ajustes teóricos $O(n^3)$ y $O(\varepsilon^{-1})$ en `graficos/`.
+- `INFORME_PROBLEMA_02.md`: informe técnico del Problema 2 con supuestos, pseudocódigo, seguimiento manual, complejidad, sets, gráficos y análisis de resultados.
+- `resultados/`: tablas `.csv` generadas por `problema_02.py`.
+- `graficos/`: gráficos `.png` generados por `graficar_problema_02.py`.
+- `sets_datos/intermedios/`: instancias estándar para $n \in \{60, 80, 120, 150, 180\}$ (mismas reglas que `tp02/crear_mochila.py`, semilla `42 + n`).
 
-También se reutilizan las instancias base ubicadas en `tp01/Mochilas/`. Para regenerar los sets complementarios del Problema 2:
+También se utilizan las instancias base ubicadas en `tp02/Mochilas/`. Para regenerar los sets intermedios:
 
 ```bash
 python tp02/Problema_02/datos.py
@@ -38,11 +40,17 @@ Para ejecutar el algoritmo FPTAS sobre una instancia individual:
 python tp02/Problema_02/fptas.py [ruta_instancia] [epsilon]
 
 # Ejemplo:
-python tp02/Problema_02/fptas.py tp01/Mochilas/mochila100.txt 0.5
+python tp02/Problema_02/fptas.py tp02/Mochilas/mochila100.txt 0.5
 ```
 
-Para correr la batería completa de experimentos y generar `resultados/`:
+Para correr la batería de experimentos y generar `resultados/`:
 
 ```bash
 python tp02/Problema_02/problema_02.py
+```
+
+Para generar los gráficos comparativos en `graficos/`:
+
+```bash
+python tp02/Problema_02/graficar_problema_02.py
 ```
