@@ -54,3 +54,37 @@ Para generar los gráficos comparativos en `graficos/`:
 ```bash
 python tp02/Problema_02/graficar_problema_02.py
 ```
+
+---
+
+## Problema 3 – Algoritmo Randomizado (Monte Carlo)
+
+Carpeta de trabajo: `tp02/Problema_03/`
+
+### Archivos y estructura
+
+- `greedy.py`: réplica del algoritmo Greedy con garantía de 2-aproximación (base TP1) para comparación directa sin dependencias entre entregas.
+- `randomizado.py`: implementación del algoritmo Monte Carlo (Greedy aleatorizado con ventana $k$ y multi-arranque de $T$ iteraciones).
+- `problema_03.py`: ejecuta la comparativa entre Randomizado, Greedy y Programación Dinámica sobre las instancias de `tp02/Mochilas/` y exporta `resultados/resultados_problema_03.csv`.
+- `graficar_problema_03.py`: genera los gráficos de ajuste teórico $O(n \log n + T \cdot n)$, comparación de tiempos y comparación de calidad en `graficos/`.
+- `INFORME_PROBLEMA_03.md`: informe técnico del Problema 3.
+
+### Ejecución
+
+Para ejecutar el algoritmo randomizado sobre una instancia individual (`[iteraciones] [ventana] [semilla]` son opcionales):
+
+```bash
+python tp02/Problema_03/randomizado.py tp02/Mochilas/mochila100.txt 50 3 42
+```
+
+Para correr los experimentos comparativos y generar `resultados/resultados_problema_03.csv`:
+
+```bash
+python tp02/Problema_03/problema_03.py
+```
+
+Para generar los gráficos en `graficos/`:
+
+```bash
+python tp02/Problema_03/graficar_problema_03.py
+```
