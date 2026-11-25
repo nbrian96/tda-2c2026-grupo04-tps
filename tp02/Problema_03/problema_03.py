@@ -9,7 +9,7 @@ if DIR_TP02 not in sys.path:
     sys.path.insert(0, DIR_TP02)
 
 from Problema_02.datos import DIR_MOCHILAS, leer_mochila  # noqa: E402
-from Problema_02.mochila_tradicional import mochila_tradicional  # noqa: E402
+from mochila_tradicional import mochila_tradicional  # noqa: E402
 from Problema_03.greedy import resolver_mochila_greedy  # noqa: E402
 from Problema_03.randomizado import mochila_randomizada  # noqa: E402
 
