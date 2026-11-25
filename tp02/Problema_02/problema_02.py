@@ -1,10 +1,16 @@
 import csv
 import os
+import sys
 import time
+
+dir_actual = os.path.dirname(os.path.abspath(__file__))
+dir_tp02 = os.path.dirname(dir_actual)
+if dir_tp02 not in sys.path:
+    sys.path.append(dir_tp02)
 
 try:
     from tp02.Problema_02 import datos, fptas
-    from tp02.Problema_02.mochila_tradicional import mochila_tradicional
+    from tp02.mochila_tradicional import mochila_tradicional
 except ImportError:
     import datos
     import fptas
