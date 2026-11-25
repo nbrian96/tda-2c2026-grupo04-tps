@@ -16,7 +16,7 @@ from Problema_01.items import crear_y_ordenar_items  # noqa: E402
 from Problema_01.sahni import algoritmo_sahni  # noqa: E402
 from Problema_02.datos import DIR_MOCHILAS, leer_mochila  # noqa: E402
 from Problema_02.fptas import mochila_fptas  # noqa: E402
-from Problema_02.mochila_tradicional import mochila_tradicional  # noqa: E402
+from mochila_tradicional import mochila_tradicional
 from Problema_03.greedy import resolver_mochila_greedy  # noqa: E402
 from Problema_03.randomizado import mochila_randomizada  # noqa: E402
 from Problema_04.algoritmos_tp1 import (  # noqa: E402
