@@ -1,10 +1,15 @@
 import os
+import sys
 import time
+
+dir_actual = os.path.dirname(os.path.abspath(__file__))
+dir_tp02 = os.path.dirname(dir_actual)
+if dir_tp02 not in sys.path:
+    sys.path.append(dir_tp02)
 
 from items import crear_y_ordenar_items
 from cotas import calcular_cota_relajacion_lineal, calcular_cota_martello_toth
 from sahni import algoritmo_sahni
-
 from mochila_tradicional import mochila_tradicional
 
 TAMANIOS = [10, 15, 20, 25, 30, 40, 100, 200, 300, 400, 500, 600, 700, 800, 1000]
